@@ -1,17 +1,18 @@
-const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const Main = imports.ui.main;
+const Gi = imports._gi;
 
-let panelConnectId;
 let panel;
 
-function allocate(actor, box, flags) {
+function vfunc_allocate(box, flags) {
+    this.set_allocation(box, flags);
+
     let allocWidth = box.x2 - box.x1;
     let allocHeight = box.y2 - box.y1;
 
-    let [leftMinWidth, leftNaturalWidth] = panel._leftBox.get_preferred_width(-1);
-    let [centerMinWidth, centerNaturalWidth] = panel._centerBox.get_preferred_width(-1);
-    let [rightMinWidth, rightNaturalWidth] = panel._rightBox.get_preferred_width(-1);
+    let [leftMinWidth, leftNaturalWidth] = this._leftBox.get_preferred_width(-1);
+    let [centerMinWidth, centerNaturalWidth] = this._centerBox.get_preferred_width(-1);
+    let [rightMinWidth, rightNaturalWidth] = this._rightBox.get_preferred_width(-1);
 
     let sideWidth = allocWidth - rightNaturalWidth - centerNaturalWidth;
 
@@ -19,52 +20,52 @@ function allocate(actor, box, flags) {
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (panel.actor.get_text_direction() == Clutter.TextDirection.RTL) {
-	childBox.x1 = allocWidth - Math.min(Math.floor(sideWidth), leftNaturalWidth);
-	childBox.x2 = allocWidth;
+    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+        childBox.x1 = allocWidth - Math.min(Math.floor(sideWidth), leftNaturalWidth);
+        childBox.x2 = allocWidth;
     } else {
-	childBox.x1 = 0;
-	childBox.x2 = Math.min(Math.floor(sideWidth), leftNaturalWidth);
+        childBox.x1 = 0;
+        childBox.x2 = Math.min(Math.floor(sideWidth), leftNaturalWidth);
     }
-    panel._leftBox.allocate(childBox, flags);
+    this._leftBox.allocate(childBox, flags);
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (panel.actor.get_text_direction() == Clutter.TextDirection.RTL) {
-	childBox.x1 = rightNaturalWidth;
-	childBox.x2 = childBox.x1 + centerNaturalWidth;
+    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+        childBox.x1 = rightNaturalWidth;
+        childBox.x2 = childBox.x1 + centerNaturalWidth;
     } else {
-	childBox.x1 = allocWidth - centerNaturalWidth - rightNaturalWidth;
-	childBox.x2 = childBox.x1 + centerNaturalWidth;
+        childBox.x1 = allocWidth - centerNaturalWidth - rightNaturalWidth;
+        childBox.x2 = childBox.x1 + centerNaturalWidth;
     }
-    panel._centerBox.allocate(childBox, flags);
+    this._centerBox.allocate(childBox, flags);
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (panel.actor.get_text_direction() == Clutter.TextDirection.RTL) {
-	childBox.x1 = 0;
-	childBox.x2 = rightNaturalWidth;
+    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+        childBox.x1 = 0;
+        childBox.x2 = rightNaturalWidth;
     } else {
-	childBox.x1 = allocWidth - rightNaturalWidth;
-	childBox.x2 = allocWidth;
+        childBox.x1 = allocWidth - rightNaturalWidth;
+        childBox.x2 = allocWidth;
     }
-    panel._rightBox.allocate(childBox, flags);
+    this._rightBox.allocate(childBox, flags);
 
-    let [leftCornerMinWidth, leftCornerWidth] = panel._leftCorner.actor.get_preferred_width(-1);
-    let [leftcornerMinHeight, leftCornerHeight] = panel._leftCorner.actor.get_preferred_width(-1);
+    let [leftCornerMinWidth, leftCornerWidth] = this._leftCorner.actor.get_preferred_width(-1);
+    let [leftcornerMinHeight, leftCornerHeight] = this._leftCorner.actor.get_preferred_width(-1);
     childBox.x1 = 0;
     childBox.x2 = leftCornerWidth;
     childBox.y1 = allocHeight;
     childBox.y2 = allocHeight + leftCornerHeight;
-    panel._leftCorner.actor.allocate(childBox, flags);
+    this._leftCorner.actor.allocate(childBox, flags);
 
-    let [rightCornerMinWidth, rightCornerWidth] = panel._rightCorner.actor.get_preferred_width(-1);
-    let [rightCornerMinHeight, rightCornerHeight] = panel._rightCorner.actor.get_preferred_width(-1);
+    let [rightCornerMinWidth, rightCornerWidth] = this._rightCorner.actor.get_preferred_width(-1);
+    let [rightCornerMinHeight, rightCornerHeight] = this._rightCorner.actor.get_preferred_width(-1);
     childBox.x1 = allocWidth - rightCornerWidth;
     childBox.x2 = allocWidth;
     childBox.y1 = allocHeight;
     childBox.y2 = allocHeight + rightCornerHeight;
-    panel._rightCorner.actor.allocate(childBox, flags);
+    this._rightCorner.actor.allocate(childBox, flags);
 }
 
 function init() {
@@ -72,9 +73,11 @@ function init() {
 }
 
 function enable() {
-    panelConnectId = panel.actor.connect('allocate', allocate);	
+    panel.__proto__[Gi.hook_up_vfunc_symbol]('allocate',
+                                             vfunc_allocate);
 }
 
 function disable() {
-    Main.panel.actor.disconnect(panelConnectId);
+    panel.__proto__[Gi.hook_up_vfunc_symbol]('allocate',
+                                             panel.__proto__.vfunc_allocate);
 }

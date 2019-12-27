@@ -20,7 +20,7 @@ function vfunc_allocate(box, flags) {
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+    if (this.get_text_direction() == Clutter.TextDirection.RTL) {
         childBox.x1 = allocWidth - Math.min(Math.floor(sideWidth), leftNaturalWidth);
         childBox.x2 = allocWidth;
     } else {
@@ -31,7 +31,7 @@ function vfunc_allocate(box, flags) {
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+    if (this.get_text_direction() == Clutter.TextDirection.RTL) {
         childBox.x1 = rightNaturalWidth;
         childBox.x2 = childBox.x1 + centerNaturalWidth;
     } else {
@@ -42,7 +42,7 @@ function vfunc_allocate(box, flags) {
 
     childBox.y1 = 0;
     childBox.y2 = allocHeight;
-    if (this.actor.get_text_direction() == Clutter.TextDirection.RTL) {
+    if (this.get_text_direction() == Clutter.TextDirection.RTL) {
         childBox.x1 = 0;
         childBox.x2 = rightNaturalWidth;
     } else {
